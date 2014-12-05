@@ -1,6 +1,6 @@
 {
-	"name": "crowdin-sync",
-	"version": "0.0.1",
+	"name": "node-crowdin",
+	"version": "0.1.0",
 	"description": "Synchrone with crowdin, your gettext based .PO files.",
 	"main": "index.js",
 	"scripts": {
@@ -11,15 +11,14 @@
 	"dependencies": {
 		"winston": "0.8.3",
 		"request": "2.49.0",
-		//"node-gettext": "0.2.14",
 		"commander": "2.5.0"
 	},
 	"devDependencies": {
 		"mocha": "2.0.*",
 		"david": "5.0.*"
-		//"express": "4.10.*",
-		//"body-parser": "*",
-		//"multer": "*"
 	},
-	"bin": "./bin/cli.js"
+	"bin": "./bin/cli.js",
+	"engines": {
+		"node": ">= 0.10.0"
+	}
 }
