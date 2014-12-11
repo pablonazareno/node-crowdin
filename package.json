@@ -1,25 +1,20 @@
 {
-	"name": "crowdin-sync",
+	"name": "node-crowdin",
 	"version": "0.0.1",
 	"description": "Synchrone with crowdin, your gettext based .PO files.",
-	"main": "index.js",
 	"scripts": {
 		"check": "./node_modules/david/bin/david.js --registry http://registry.npm.ml.com/"
 	},
 	"author": "Pablo Lucadei",
-	"license": "Apache 2.0",
+	"license": "MIT",
 	"dependencies": {
 		"winston": "0.8.3",
 		"request": "2.49.0",
-		//"node-gettext": "0.2.14",
 		"commander": "2.5.0"
 	},
 	"devDependencies": {
 		"mocha": "2.0.*",
 		"david": "5.0.*"
-		//"express": "4.10.*",
-		//"body-parser": "*",
-		//"multer": "*"
 	},
 	"bin": "./bin/cli.js"
 }

@@ -14,7 +14,7 @@ var request = require('request');
 var https = require('https');
 var exec = require('child_process').exec;
 
-var CONFIG_PATH = path.join(__dirname, 'crowdin.json')
+var CONFIG_PATH = path.join(process.cwd(), 'crowdin.json')
 var crowdin = require(CONFIG_PATH);
 
 /******* PRIVATE METHODS *******/
@@ -159,7 +159,7 @@ function endsWith(str, suffix) {
 
 function getKeys(file) {
 	logger.debug("Getting tranlations from file: " + file);
-	exec('xgettext -j --force-po --no-wrap -ktr -ktrd -ktrn:1,2 -ktrnd:1,2 -o i18n/keys.po -LJavaScript ' + file,
+	exec('xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/keys.po -LJavaScript ' + file,
 		function(error) {
 			if (error !== null) {
 				logger.error('exec error: ' + error);
@@ -167,38 +167,30 @@ function getKeys(file) {
 		});
 }
 
-function scandDirectory(directory, recursive) {
+function scandDirectory(directory, callback) {
 	logger.debug("Scaning " + directory + " for keys.");
-	try {
-		var files = fs.readdirSync(directory);
-		files.map(function(file) {
-			return path.join(directory, file);
-		}).forEach(function(file) {
-			var stats = fs.statSync(file);
-			if (stats.isDirectory() && recursive === true) {
-				scandDirectory(file);
-			} else if (stats.isFile() && endsWith(file, '.js')) {
-				getKeys(file);
+	// find . -iname "*.js" | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/keys.po -LJavaScript
+	exec('find ' + directory + ' -iname "*.js" | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/keys.po -LJavaScript',
+		function(error) {
+			if (error !== null) {
+				logger.warn("Error scaning directory " + directory)
 			}
-
+			callback(error);
 		});
-	} catch (e) {
-		logger.warn("Error scaning directory " + directory)
-	}
 }
 
-function gerateTranslationFile() {
+function gerateTranslationFile(callback) {
 	initPaths();
-	scandDirectory('.', false);
-	crowdin.srcPath.forEach(function(dir) {
-		scandDirectory(dir, true);
-	});
+	scandDirectory(crowdin.srcPath, callback);
 }
 
 /*******************************/
 var createCrowdin = function() {
-	gerateTranslationFile();
-	uploadKeys();
+	gerateTranslationFile(function(error){
+		if (!error) {
+			uploadKeys();
+		}
+	});
 };
 
 
@@ -234,8 +226,11 @@ var downloadCrowdin = function() {
 };
 
 var uploadCrowdin = function(merge) {
-	gerateTranslationFile();
-	upgradeKeys();
+	gerateTranslationFile(function(error){
+		if (!error) {
+			upgradeKeys();
+		}
+	});
 };
 
 module.exports.createCrowdin = createCrowdin;

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var program = require('commander');
 var scripts = require('./scripts.js');
 program.version('0.0.1');

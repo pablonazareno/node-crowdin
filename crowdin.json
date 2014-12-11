@@ -1,5 +1,5 @@
 {
-	"projectId": "preject-id",
-	"apiKey": "api-key",
-	"srcPath": ["classes", "lib"]
+	"projectId": "",
+	"apiKey": "",
+	"srcPath": "lib"
 }
