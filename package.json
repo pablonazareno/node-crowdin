@@ -16,5 +16,8 @@
 		"mocha": "2.0.*",
 		"david": "5.0.*"
 	},
-	"bin": "./bin/cli.js"
+	"bin": "./bin/cli.js",
+	"engines": {
+		"node": ">= 0.10.0"
+	}
 }
