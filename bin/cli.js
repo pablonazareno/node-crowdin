@@ -26,5 +26,11 @@ program
 		scripts.uploadCrowdin();
 	});
 
+program
+        .command('generate')
+        .description('Scan scr code and generate traductions files.')
+        .action(function() {
+                scripts.generateFile(console.log);
+        });
 
 program.parse(process.argv);

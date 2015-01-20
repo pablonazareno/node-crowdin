@@ -233,6 +233,8 @@ var uploadCrowdin = function(merge) {
 	});
 };
 
+
 module.exports.createCrowdin = createCrowdin;
 module.exports.downloadCrowdin = downloadCrowdin;
 module.exports.uploadCrowdin = uploadCrowdin;
+module.exports.generateFile = gerateTranslationFile;

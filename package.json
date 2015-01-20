@@ -1,6 +1,6 @@
 {
 	"name": "node-crowdin",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Synchrone with crowdin, your gettext based .PO files.",
 	"scripts": {
 		"check": "./node_modules/david/bin/david.js --registry http://registry.npm.ml.com/"
@@ -9,12 +9,12 @@
 	"license": "MIT",
 	"dependencies": {
 		"winston": "0.8.3",
-		"request": "2.49.0",
-		"commander": "2.5.0"
+		"request": "2.51.0",
+		"commander": "2.6.0"
 	},
 	"devDependencies": {
-		"mocha": "2.0.*",
-		"david": "5.0.*"
+		"mocha": "2.1.0",
+		"david": "6.1.1"
 	},
 	"bin": "./bin/cli.js",
 	"engines": {
