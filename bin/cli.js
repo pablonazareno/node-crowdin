@@ -6,14 +6,14 @@ program.version('0.0.1');
 
 program
 	.command('download')
- 	.description('Download traductions from Crowdin.')
+	.description('Download traductions from Crowdin.')
 	.action(function() {
 		scripts.downloadCrowdin();
 	});
 
 program
 	.command('create')
- 	.description('Initialize traductions in Crowdin.')
+	.description('Initialize traductions in Crowdin.')
 	.action(function() {
 		scripts.createCrowdin();
 	});
@@ -21,16 +21,17 @@ program
 
 program
 	.command('upload')
- 	.description('Scan scr code and upload new traductions to Crowdin.')
-	.action(function() {
-		scripts.uploadCrowdin();
+	.description('Scan scr code and upload new traductions to Crowdin.')
+	.option('-m, --merge', 'Merge with existing traductions.')
+	.action(function(option) {
+		scripts.uploadCrowdin(option.merge);
 	});
 
 program
-        .command('generate')
-        .description('Scan scr code and generate traductions files.')
-        .action(function() {
-                scripts.generateFile(console.log);
-        });
+	.command('generate')
+	.description('Scan scr code and generate traductions files.')
+	.action(function() {
+		scripts.generateFile(console.log);
+	});
 
 program.parse(process.argv);

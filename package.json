@@ -1,6 +1,6 @@
 {
 	"name": "node-crowdin",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Synchrone with crowdin, your gettext based .PO files.",
 	"scripts": {
 		"check": "./node_modules/david/bin/david.js --registry http://registry.npm.ml.com/"
