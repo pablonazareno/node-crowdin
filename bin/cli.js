@@ -31,7 +31,8 @@ program
 	.command('generate')
 	.description('Scan scr code and generate traductions files.')
 	.action(function() {
-		scripts.generateFile(console.log);
+		scripts.generateFile('keys.po',console.log);
 	});
 
 program.parse(process.argv);
+
