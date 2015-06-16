@@ -16,6 +16,18 @@ Place a file named **crowding.json** in the root of your project with this infor
 	"srcPath": "classes"
 }
 ```
+
+If you are using **Mac**, make sure you already have gettext available in your OS. If not, install it:
+
+```bash
+brew install gettext
+```
+Then add it to the PATH env variable:
+
+```bash
+export GETTEXT_HOME=/usr/local/opt/gettext/
+export PATH=$GETTEXT_HOME/bin:$PATH
+```
 ##Usage
 ###node-crowding create
 - Scan src path for translations and create a new project file in crowding with one finded. 
