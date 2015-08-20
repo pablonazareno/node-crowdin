@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 var program = require('commander');
 var scripts = require('./scripts.js');
@@ -8,7 +9,7 @@ program
 	.command('download')
 	.description('Download traductions from Crowdin.')
 	.action(function() {
-		scripts.downloadCrowdin();
+		scripts.downloadCrowdin(console.log);
 	});
 
 program
@@ -31,8 +32,7 @@ program
 	.command('generate')
 	.description('Scan scr code and generate traductions files.')
 	.action(function() {
-		scripts.generateFile('keys.po',console.log);
+		scripts.generateFile(scripts.KEYS_FILE, console.log);
 	});
 
 program.parse(process.argv);
-
