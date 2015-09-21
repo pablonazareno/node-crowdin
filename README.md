@@ -13,7 +13,8 @@ Place a file named **crowding.json** in the root of your project with this infor
 {
 	"projectId": "mercadolibre-xxx",
 	"apiKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	"srcPath": "classes"
+	"srcPath": "classes",
+	"filename": "Messages.po"
 }
 ```
 

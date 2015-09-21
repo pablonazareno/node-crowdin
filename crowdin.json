@@ -1,5 +1,6 @@
 {
 	"projectId": "",
 	"apiKey": "",
-	"srcPath": "lib"
+	"srcPath": "lib",
+	"filename": "Messages.po"
 }

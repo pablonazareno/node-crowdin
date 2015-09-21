@@ -17,8 +17,6 @@ var exec = require('child_process').exec;
 var CONFIG_PATH = path.join(process.cwd(), 'crowdin.json');
 var crowdin = require(CONFIG_PATH);
 
-var KEYS_FILE = 'Messages.po';
-
 /******* PRIVATE METHODS *******/
 function refreshTranslations(callback) {
 	logger.debug("Refreshing translation.");
@@ -28,12 +26,11 @@ function refreshTranslations(callback) {
 			key: crowdin.apiKey
 		}
 	};
-	request(opts, function(error, response, body) {
-		if (response.statusCode == 200) {
-			logger.info("Translations refreshed");
+	request(opts, function(error, response) {
+		if (!error && response.statusCode == 200) {
+			logger.info("Translations refreshed.");
 		} else {
-			logger.error('error: ' + response.statusCode);
-			logger.error(body);
+			logger.error("Fail to refresh translation.");
 		}
 		callback(error);
 	});
@@ -65,43 +62,45 @@ function downloadTranslations(callback) {
 	req.end();
 }
 
-function uploadKeys(fileName) {
+function uploadKeys(fileName, realFileName, callback) {
 	logger.debug('Uploading traductions...');
 	var formData = {};
-    formData['files['+KEYS_FILE+']'] = fs.createReadStream('./i18n/' + fileName);
-    
+	formData['files[' + fileName + ']'] = fs.createReadStream('./i18n/' + realFileName);
+
 	request.post({
 		url: 'https://crowdin.com/api/project/' + crowdin.projectId + '/add-file?key=' + crowdin.apiKey,
 		formData: formData
-	}, function(err, response, body) {
+	}, function(err) {
 		if (err) {
 			logger.error('Upload failed.', err);
 		} else {
 			logger.info('Traductions uploaded successfully!');
 		}
+		callback(err);
 	});
 }
 
-function upgradeKeys(fileName) {
+function upgradeKeys(fileName, realFileName, callback) {
 	logger.debug('Uploading traductions...');
 	var formData = {};
-    formData['files['+KEYS_FILE+']'] = fs.createReadStream('./i18n/' + fileName);
-    
+	formData['files[' + fileName + ']'] = fs.createReadStream('./i18n/' + realFileName);
+
 	request.post({
 		url: 'https://crowdin.com/api/project/' + crowdin.projectId + '/update-file?key=' + crowdin.apiKey,
 		formData: formData
-	}, function(err, response, body) {
+	}, function(err) {
 		if (err) {
 			logger.error('Upload failed.', err);
 		} else {
 			logger.info('Traductions uploaded successfully!');
 		}
+		callback(err);
 	});
 }
 
 function mergeTranslations(srcFile, outputFile, callback) {
 	logger.info('Merging transalations.');
-	exec("msgcat ./i18n/" + srcFile + " ./i18n/es-AR/" + KEYS_FILE + " -o ./i18n/" + outputFile, callback);
+	exec("msgcat ./i18n/" + srcFile + " ./i18n/es-AR/" + srcFile + " -o ./i18n/" + outputFile, callback);
 }
 
 function initPaths(fileName) {
@@ -155,22 +154,6 @@ function unzipTranslations(callback) {
 		});
 }
 
-/*
-function endsWith(str, suffix) {
-	return str.indexOf(suffix, str.length - suffix.length) !== -1;
-}
-
-function getKeys(file) {
-	logger.debug("Getting tranlations from file: " + file);
-	exec('xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/'+KEYS_FILE+' -LJavaScript ' + file,
-		function(error) {
-			if (error !== null) {
-				logger.error('exec error: ' + error);
-			}
-		});
-}
-*/
-
 function scanDirectory(directory, fileName, callback) {
 	logger.debug("Scaning " + directory + " for keys.");
 	exec('find ' + directory + ' -iname "*.js" | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/' + fileName + ' -LJavaScript',
@@ -188,10 +171,10 @@ function gerateTranslationFile(fileName, callback) {
 }
 
 /*******************************/
-var createCrowdin = function() {
-	gerateTranslationFile(KEYS_FILE, function(error) {
+var createCrowdin = function(callback) {
+	gerateTranslationFile(crowdin.filename, function(error) {
 		if (!error) {
-			uploadKeys(KEYS_FILE);
+			uploadKeys(crowdin.filename, crowdin.filename, callback);
 		}
 	});
 };
@@ -203,7 +186,7 @@ var downloadCrowdin = function(callback) {
 	}
 	cleanOldTranslations(function(error) {
 		if (error) {
-			logger.error("Error cleaning up old translations." + error.code);
+			logger.error("Error cleaning up old translations.");
 			callback(error);
 		} else {
 			refreshTranslations(function(error) {
@@ -218,7 +201,7 @@ var downloadCrowdin = function(callback) {
 						} else {
 							unzipTranslations(function(error) {
 								if (error) {
-									logger.error("Error Unziping translations" + error);
+									logger.error("Error Unziping translations.");
 								} else {
 									logger.info("Tranlations updated sucessfull!");
 								}
@@ -232,25 +215,28 @@ var downloadCrowdin = function(callback) {
 	});
 };
 
-var uploadCrowdin = function(merge) {
-	gerateTranslationFile(KEYS_FILE, function(error) {
+var uploadCrowdin = function(merge, callback) {
+	gerateTranslationFile(crowdin.filename, function(error) {
 		if (merge) {
 			downloadCrowdin(function(error) {
 				if (!error) {
-					mergeTranslations(KEYS_FILE, 'merged_'+KEYS_FILE, function(error) {
+					mergeTranslations(crowdin.filename, 'merged_' + crowdin.filename, function(error) {
 						if (error) {
-							logger.error('Error mergin translations. '+JSON.stringify(error));
+							logger.error('Error merging translations.');
+							callback(error);
 						} else {
-							upgradeKeys('merged_'+KEYS_FILE);
+							upgradeKeys(crowdin.filename, 'merged_' + crowdin.filename, callback);
 						}
 					});
+				} else {
+					callback(error);
 				}
 			});
 		} else {
 			if (error) {
-
+				callback(error);
 			} else {
-				upgradeKeys('merged_'+KEYS_FILE);
+				upgradeKeys(crowdin.filename, 'merged_' + crowdin.filename, callback);
 			}
 		}
 	});
@@ -261,4 +247,4 @@ module.exports.createCrowdin = createCrowdin;
 module.exports.downloadCrowdin = downloadCrowdin;
 module.exports.uploadCrowdin = uploadCrowdin;
 module.exports.generateFile = gerateTranslationFile;
-module.exports.KEYS_FILE = KEYS_FILE;
+module.exports.defaultFileName = crowdin.filename;
