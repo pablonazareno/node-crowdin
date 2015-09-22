@@ -236,7 +236,7 @@ var uploadCrowdin = function(merge, callback) {
 			if (error) {
 				callback(error);
 			} else {
-				upgradeKeys(crowdin.filename, 'merged_' + crowdin.filename, callback);
+				upgradeKeys(crowdin.filename, crowdin.filename, callback);
 			}
 		}
 	});
