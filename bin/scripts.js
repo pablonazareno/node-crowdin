@@ -156,7 +156,7 @@ function unzipTranslations(callback) {
 
 function scanDirectory(directory, fileName, callback) {
 	logger.debug("Scaning " + directory + " for keys.");
-	exec('find ' + directory + ' -iname "*.js" | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/' + fileName + ' -LJavaScript',
+	exec('find ' + directory + ' -iname "*.*" | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/' + fileName + ' -LJavaScript',
 		function(error) {
 			if (error !== null) {
 				logger.warn("Error scaning directory " + directory);
