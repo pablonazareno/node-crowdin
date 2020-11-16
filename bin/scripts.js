@@ -154,9 +154,14 @@ function unzipTranslations(callback) {
 		});
 }
 
-function scanDirectory(directory, fileName, callback) {
-	logger.debug("Scaning " + directory + " for keys.");
-	exec('find ' + directory + ' -iname "*.*" | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/' + fileName + ' -LJavaScript',
+function scanDirectory(directory, fileName, extNames = ['js', 'ts'], callback) {
+	logger.debug(`Scaning ${directory} for keys, in ${extNames.join(', ')} files`);
+
+	let extquery = extNames.map(ext => `-iname "*.${ext}" -not -iname "*.spec.${ext}"`).join(' -o ');
+
+	if (extNames.length > 1) extquery = `\\\( ${extquery} \\\)`;
+
+	exec(`find + ${directory} ${extquery} | xargs xgettext -j --from-code=UTF-8 --force-po --no-wrap -ktr:1 -ktrd:1 -ktrn:1,2 -ktrnd:1,2 -o i18n/${fileName} -LJavaScript`,
 		function(error) {
 			if (error !== null) {
 				logger.warn("Error scaning directory " + directory);
@@ -167,7 +172,7 @@ function scanDirectory(directory, fileName, callback) {
 
 function gerateTranslationFile(fileName, callback) {
 	initPaths(fileName);
-	scanDirectory(crowdin.srcPath, fileName, callback);
+	scanDirectory(crowdin.srcPath, fileName, crowdin.extNames, callback);
 }
 
 /*******************************/
